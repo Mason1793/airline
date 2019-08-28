@@ -9,16 +9,10 @@ import process_data
 
 denominator = 24*60*60
 
-def ratio_accumulate_traveller_callback(interval_time):   
-    temp_x=(math.log(interval_time)-mu)/(sigma*pow(2,0.5))
-    p=0.5 - 0.5*math.erf(temp_x);
-    return p
-
-
 
 
 # 这里修改航班时间
-def ratio_accumulate_traveller(take_off_time) :
+def ratio_accumulate_traveller(take_off_time,interval_time) :
     t0=datetime.datetime.strptime(take_off_time,"%Y-%m-%d %H:%M:%S")
 
     t0_zero=t0-datetime.timedelta(hours=t0.hour,minutes=t0.minute,seconds=t0.second)
@@ -36,10 +30,10 @@ def ratio_accumulate_traveller(take_off_time) :
 
 
 # X表示等待时间 ，等待时间为0无意义（ln0），需要设置一个极限值
-X=np.linspace(0.00000001,0.2,100)
-Y=list(map(lambda x: ratio_accumulate_traveller_callback(x),X))
-plt.plot(X,Y)
-plt.show()
+# X=np.linspace(0.00000001,0.2,100)
+# Y=list(map(lambda x: ratio_accumulate_traveller(x),X))
+# plt.plot(X,Y)
+# plt.show()
 
 
 #2019-04-03 08:00:00
