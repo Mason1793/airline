@@ -83,10 +83,12 @@ def count_interval_travellers(moments_to_zero,time_flys_to_zero,travellers_num):
     l=list(internal_people.values())
 
     # plt.bar(range(len(l)), l)
-    print(len(every_moment))
-    print(len(l))
     # every_moment=
-    plt.plot(every_moment[1:],l)
+    plt.plot(every_moment[1:-1],l[:-1])
+    kd=[]
+    # for i in range(len(every_moment[1:-1])):
+    #     kd.append(i+1)
+    plt.xticks(every_moment[1:-1],rotation=90)
     plt.show()
             
 
