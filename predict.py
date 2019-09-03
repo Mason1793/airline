@@ -65,33 +65,22 @@ def count_interval_travellers(moments_to_zero,time_flys_to_zero,travellers_num):
         for j in range(len(moments_to_zero)-1):                 ##遍历每一时刻
             moment = moments_to_zero[j]                              
             if take_off_time < moments_to_zero[1] and take_off_time >moments_to_zero[0]:            ##计算5:00-5:30这一段时间
-                p1 = ratio_accumulate_traveller(take_off_time,0.0000001)            ##直接为0，不能计算对数
-                p2 = ratio_accumulate_traveller(take_off_time,take_off_time - moments_to_zero[0])
-                traveller_num = travellers_num[i] * (p1-p2)
-                internal_people[internals[0]] =internal_people[internals[0]] + traveller_num
+                # p1 = ratio_accumulate_traveller(take_off_time,0.0000001)            ##直接为0，不能计算对数
+                # p2 = ratio_accumulate_traveller(take_off_time,take_off_time - moments_to_zero[0])
+                # traveller_num = travellers_num[i] * (p1-p2)
+                # internal_people[internals[0]] =internal_people[internals[0]] + traveller_num
+                internal_people[internals[0]] = internal_people[internals[0]] + 0
                 break
             elif moment < take_off_time:
                 # print(take_off_time-moment)
                 p.append(ratio_accumulate_traveller(take_off_time,take_off_time - moment))              
         p.append(1)                         ##5:30-5:35
         if len(p) >=2:
-            for i in range(len(p) -1):
-                internal_people[internals[i]] = internal_people[internals[i]] + travellers_num[i] * (p[i+1] -p[i])      ##计算每个时间段人数
+            for k in range(len(p) -1):
+                internal_people[internals[k]] = internal_people[internals[k]] + travellers_num[i] * (p[k+1] -p[k])      ##计算每个时间段人数
+                
 
-    print(internal_people)
-    
-    l=list(internal_people.values())
-
-    # plt.bar(range(len(l)), l)
-    # every_moment=
-    plt.plot(every_moment[1:-1],l[:-1])
-    
-    # for i in range(len(every_moment[1:-1])):
-    #     kd.append(i+1)
-    plt.title('2019-01-16')
-    plt.xticks(every_moment[1:-1],rotation=90)
-   
-    plt.show()
+    return internal_people
             
 
 
@@ -102,12 +91,82 @@ def count_traveller_num(air_propertys,travellers):
         num = sum(travellers[i].values())                   ##得到航班的买票数
         if air_propertys[i] == '国内':
             travellers_num.append(num * 0.95 * 0.91 * (0.26 + 0.74*0.25))           ##计算国内航班实际乘客数
+            # print("国内:",num * 0.95 * 0.91 * (0.26 + 0.74*0.25))
         else:
             travellers_num.append(num * 0.95 * 0.55)
+            # print("国际：",num * 0.95 * 0.55)
     return travellers_num
+
+
+##分别计算国内国外四种类别的属性
+def count_dome_inter_values(data):
+    domestic_time_flys=[]                           ##国内航班起飞时间
+    inter_time_flys = []                            ##国际航班起飞时间
+    domestic_PFJC_travellers = []                   ##国内高端柜台人数
+    domestic_GY_travellers =[]                      ##国内经济柜台人数
+    inter_PFJC_travellers = []                      ##国际高端柜台人数
+    inter_GF_travellers = []                        ##国内经济柜台人数
+
+    for air_data in data:
+        if air_data['property'] =='国内':
+            domestic_GY_num = 0
+            domestic_PFJC_num = 0
+            domestic_time_flys.append(air_data['time_fly'])    
+            for key in list(air_data['traveller'].keys()):        ##遍历所有键
+                key = str(key)
+                # print(keys[-1])
+                if key[-1] =='G' or key[-1]=='Y':
+                    
+                    domestic_GY_num = domestic_GY_num + air_data['traveller'][key] 
+                else:
+                    domestic_PFJC_num = domestic_PFJC_num + air_data['traveller'][key] 
+            domestic_GY_travellers.append(domestic_GY_num * 0.95 * 0.91 * (0.26 + 0.74*0.25))
+            domestic_PFJC_travellers.append(domestic_PFJC_num * 0.95 * 0.91 * (0.26 + 0.74*0.25))
+        else:
+            inter_GY_num = 0
+            inter_PFJC_num = 0
+            inter_time_flys.append(air_data['time_fly'])
+            for key in list(air_data['traveller'].keys()):
+                key = str(key)
+                if key[-1]=='G' or key[-1] =='Y':
+                    # print(air_data['traveller'][key])
+                    inter_GY_num = inter_GY_num + air_data['traveller'][key] 
+                else:
+                    inter_PFJC_num = inter_PFJC_num + air_data['traveller'][key]
+            inter_GF_travellers.append(inter_GY_num * 0.95 * 0.55)
+            inter_PFJC_travellers.append(inter_PFJC_num * 0.95 * 0.55)
+    # print("国内高端柜台：",domestic_PFJC_travellers,"航班数：",len(domestic_PFJC_travellers))
+    # print("国内经济柜台：",domestic_GY_travellers,"航班数：",len(domestic_GY_travellers))
+    # print("国际高端柜台：",inter_PFJC_travellers,"航班数：",len(inter_PFJC_travellers))
+    # print("国际经济柜台:",inter_GF_travellers,"航班数：",len(inter_GF_travellers))
+
+    return domestic_time_flys,domestic_PFJC_travellers,domestic_GY_travellers,inter_time_flys,inter_PFJC_travellers,inter_GF_travellers
+
+
 
 #计算一天每个时间点的人数
 def count_model(data):
+    domestic_time_flys,domestic_PFJC_travellers,domestic_GY_travellers,inter_time_flys,inter_PFJC_travellers,inter_GF_travellers = count_dome_inter_values(data)
+   
+    moments_to_zero,domestic_time_flys_to_zero = count_interval_time(domestic_time_flys)
+    moments_to_zero,inter_time_flys_to_zero = count_interval_time(inter_time_flys)
+    
+
+    sum_domestic_PFJC_travellers = count_interval_travellers(moments_to_zero,domestic_time_flys_to_zero,domestic_PFJC_travellers)
+    sum_domestic_GY_travellers = count_interval_travellers(moments_to_zero,domestic_time_flys_to_zero,domestic_GY_travellers)
+    sum_inter_PFJC_travellers = count_interval_travellers(moments_to_zero,inter_time_flys_to_zero,inter_PFJC_travellers)
+    sum_inter_GY_travellers = count_interval_travellers(moments_to_zero,inter_time_flys_to_zero,inter_GF_travellers)
+
+
+    print("国内高端柜台人数:",sum_domestic_PFJC_travellers,'\n')
+    print("国内经济柜台人数：",sum_domestic_GY_travellers,'\n')
+    print("国际高端柜台人数:",sum_inter_PFJC_travellers,'\n')
+    print("国际经济柜台人数：",sum_inter_GY_travellers,'\n')
+    # moments_to_zero,time_flys_to_zero = count_interval_time(time_flys)                  ##将时间转换为0-1空间上
+    # count_interval_travellers(moments_to_zero,time_flys_to_zero,travellers_num)         ##计算间隔人数
+    
+
+
     time_flys = []
     air_propertys = []
     travellers = []
@@ -115,30 +174,27 @@ def count_model(data):
         time_flys.append(air_data['time_fly'])
         air_propertys.append(air_data['property'])
         travellers.append(air_data['traveller'])
-    # print("飞行时间：",time_flys)
-    # print("飞机属性：",air_propertys)
-    # print("旅客:",travellers)
-    
+            
     travellers_num = count_traveller_num(air_propertys,travellers)                      ##计算旅客实际乘机人数
     moments_to_zero,time_flys_to_zero = count_interval_time(time_flys)                  ##将时间转换为0-1空间上
-    count_interval_travellers(moments_to_zero,time_flys_to_zero,travellers_num)         ##计算间隔人数
+    sum_people = count_interval_travellers(moments_to_zero,time_flys_to_zero,travellers_num)         ##计算间隔人数
+    print("总人数：",sum_people)
 
-# 累计比例图，入参时间转换到0-1空间
-def plt_ratio(fly_time):
-    X=np.linspace(0.00000001,0.2,100)
-    Y=list(map(lambda x: ratio_accumulate_traveller(fly_time,x),X))
-    plt.plot(X,Y)
+    l=list(sum_people.values())
+    plt.plot(every_moment[1:-1],l[:-1])
+    plt.title('2019-01-16')
+    plt.xticks(every_moment[1:-1],rotation=90)
+   
     plt.show()
-    
+    # print(time_flys)
+    # print(inter_time_flys)
+    # print(domestic_time_flys)
+
 if __name__ == '__main__':
-    data = get_data_on_date("/Users/mason/Desktop/补全航班数据.xls","2019-1-16")
-    # # print(data)
-    # plt_ratio(0.5)
+    data = get_data_on_date("/home/dhm/民航/补全航班数据.xls","2019-1-16")
+    # print(data)
+    # count_dome_inter_values(data)
     count_model(data)
-
-
-    
-
     # p = ratio_accumulate_traveller(0.24333,0.00001)
     # print(p)
     # print("时间格式YYYY-MM-DD hh-mm-ss,如2019-09-01 19:11:11")
@@ -157,7 +213,10 @@ if __name__ == '__main__':
 
 
 # X表示等待时间 ，等待时间为0无意义（ln0），需要设置一个极限值
-
+# X=np.linspace(0.00000001,0.2,100)
+# Y=list(map(lambda x: ratio_accumulate_traveller(x),X))
+# plt.plot(X,Y)
+# plt.show()
 
 
 #2019-04-03 08:00:00
