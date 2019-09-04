@@ -123,11 +123,11 @@ def count_traveller(time_from,time_to,data):
 # # d = sorted(d.items(),key = lambda item:item[1],reverse=False);
 # print(d)
 if __name__ == '__main__':
-    data = get_data_on_date("/Users/mason/Desktop/补全航班数据.xls","2019-1-16")
+    data = get_data_on_date("/Users/mason/Desktop/补全航班数据.xls","2019-1-14")
     # print(data)
 
 
-    x,y,z,s = count_traveller("2019-01-16 6:30:00","2019-01-16 07:00:00",data)
+    x,y,z,s = count_traveller("2019-01-14 00:00:00","2019-01-14 07:00:00",data)
     print("国内经济,国内商务，国际经济，国际商务")
     print(x,",",y,",",z,",",s)
 # time,dic_traveller = read_excel("airline.xls",1)
