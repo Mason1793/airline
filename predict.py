@@ -182,11 +182,14 @@ def count_model(data):
     print("总人数：",sum_people)
 
     l=list(sum_people.values())
-    plt.plot(every_moment[1:-1],l[:-1])
-    plt.title('2019-01-16')
-    plt.xticks(every_moment[1:-1],rotation=90)
+    
+    return sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers
+    
+    # plt.plot(every_moment[1:-1],l[:-1])
+    # plt.title('2019-01-16')
+    # plt.xticks(every_moment[1:-1],rotation=90)
    
-    plt.show()
+    # plt.show()
     # print(time_flys)
     # print(inter_time_flys)
     # print(domestic_time_flys)
@@ -198,12 +201,37 @@ def plt_ratio(take_off_time):
     plt.show()
     return
 
+def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
+    X = np.arange(5,24,0.5)
+    print(X)
+    domestic_PFJC_Y = sum_domestic_PFJC_travellers.values();
+
+    domestic_GY_Y = sum_domestic_GY_travellers.values();
+    inter_PFJC_Y = sum_inter_PFJC_travellers.values();
+    sum_inter_GY_travellers.values();
+    # print(len(domestic_PFJC_Y))
+   
+
+    domestic_PFJC, = plt.plot(X,sum_domestic_PFJC_travellers.values(),c='red');
+    domestic_GY, = plt.plot(X,sum_domestic_GY_travellers.values(),c='blue')
+    inter_PFJC, = plt.plot(X,sum_inter_PFJC_travellers.values(),c='orange')
+    inter_GY, = plt.plot(X, sum_inter_GY_travellers.values(),c='green');
+
+    plt.xlabel("time")
+    plt.ylabel("CAPSS")
+    plt.legend(handles=[domestic_PFJC, domestic_GY,inter_PFJC,inter_GY], labels=['domestic_PFJC', 'domestic_GY','inter_PFJC','inter_GY'],loc='upper right')
+    plt.show()
+    return
+
 if __name__ == '__main__':
     data = get_data_on_date("/Users/mason/Desktop/补全航班数据.xls","2019-1-16")
-    plt_ratio(1/12)
+    # plt_ratio(5/24)
     # print(data)
     # count_dome_inter_values(data)
-    # count_model(data)
+    sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers = count_model(data)
+    # count_model(data) 
+    plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
+    #count_model(data)
     # p = ratio_accumulate_traveller(0.24333,0.00001)
     # print(p)
     # print("时间格式YYYY-MM-DD hh-mm-ss,如2019-09-01 19:11:11")
