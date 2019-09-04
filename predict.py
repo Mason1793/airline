@@ -12,7 +12,8 @@ denominator = 24*60*60
 ##"00:00:00","00:30:00","01:00:00","01:30:00","02:00:00","02:30:00","03:00:00","03:30:00","04:00:00","04:30:00"
                 
 
-every_moment = ["05:00:00","05:30:00","06:00:00","06:30:00","07:00:00","07:30:00","08:00:00","08:30:00",
+every_moment = ["00:00:00","00:30:00","01:00:00","01:30:00","02:00:00","02:30:00","03:00:00","03:30:00","04:00:00",
+                "04:30:00","05:00:00","05:30:00","06:00:00","06:30:00","07:00:00","07:30:00","08:00:00","08:30:00",
                 "09:00:00","09:30:00","10:00:00","10:30:00","11:00:00","11:30:00","12:00:00","12:30:00","13:00:00",
                 "13:30:00","14:00:00","14:30:00","15:00:00","15:30:00","16:00:00","16:30:00","17:00:00","17:30:00",
                 "18:00:00","18:30:00","19:00:00","19:30:00","20:00:00","20:30:00","21:00:00","21:30:00","22:00:00",
@@ -159,10 +160,10 @@ def count_model(data):
     sum_inter_GY_travellers = count_interval_travellers(moments_to_zero,inter_time_flys_to_zero,inter_GF_travellers)
 
 
-    print("国内高端柜台人数:",sum_domestic_PFJC_travellers,'\n')
-    print("国内经济柜台人数：",sum_domestic_GY_travellers,'\n')
-    print("国际高端柜台人数:",sum_inter_PFJC_travellers,'\n')
-    print("国际经济柜台人数：",sum_inter_GY_travellers,'\n')
+    # print("国内高端柜台人数:",sum_domestic_PFJC_travellers,'\n')
+    # print("国内经济柜台人数：",sum_domestic_GY_travellers,'\n')
+    # print("国际高端柜台人数:",sum_inter_PFJC_travellers,'\n')
+    # print("国际经济柜台人数：",sum_inter_GY_travellers,'\n')
     # moments_to_zero,time_flys_to_zero = count_interval_time(time_flys)                  ##将时间转换为0-1空间上
     # count_interval_travellers(moments_to_zero,time_flys_to_zero,travellers_num)         ##计算间隔人数
     
@@ -204,20 +205,20 @@ def plt_ratio(take_off_time):
 
 # 绘制各个柜台的人数
 def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
-    X = np.arange(5,24,0.5)
+    X = np.arange(0,24,0.5)
     print(X)
-    domestic_PFJC_Y = sum_domestic_PFJC_travellers.values();
+    domestic_PFJC_Y = sum_domestic_PFJC_travellers.values()
 
-    domestic_GY_Y = sum_domestic_GY_travellers.values();
-    inter_PFJC_Y = sum_inter_PFJC_travellers.values();
-    sum_inter_GY_travellers.values();
+    domestic_GY_Y = sum_domestic_GY_travellers.values()
+    inter_PFJC_Y = sum_inter_PFJC_travellers.values()
+    sum_inter_GY_travellers.values()
     # print(len(domestic_PFJC_Y))
    
 
-    domestic_PFJC, = plt.plot(X,sum_domestic_PFJC_travellers.values(),c='red');
+    domestic_PFJC, = plt.plot(X,sum_domestic_PFJC_travellers.values(),c='red')
     domestic_GY, = plt.plot(X,sum_domestic_GY_travellers.values(),c='blue')
     inter_PFJC, = plt.plot(X,sum_inter_PFJC_travellers.values(),c='orange')
-    inter_GY, = plt.plot(X, sum_inter_GY_travellers.values(),c='green');
+    inter_GY, = plt.plot(X, sum_inter_GY_travellers.values(),c='green')
 
     plt.xlabel("time")
     plt.ylabel("CAPSS")
@@ -226,9 +227,9 @@ def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,s
     return
 
 if __name__ == '__main__':
-    data = get_data_on_date("补全航班数据.xls","2019-1-16")
+    data = get_data_on_date("补全航班数据.xls","2019-1-14")
     # plt_ratio(5/24)
-    # print(data)
+    print(data)
     # count_dome_inter_values(data)
     sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers = count_model(data)
     # count_model(data) 
