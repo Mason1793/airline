@@ -226,7 +226,7 @@ def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,s
     return
 
 if __name__ == '__main__':
-    data = get_data_on_date("/Users/mason/Desktop/补全航班数据.xls","2019-1-16")
+    data = get_data_on_date("补全航班数据.xls","2019-1-16")
     # plt_ratio(5/24)
     # print(data)
     # count_dome_inter_values(data)
