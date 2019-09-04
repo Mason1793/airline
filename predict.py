@@ -201,6 +201,8 @@ def plt_ratio(take_off_time):
     plt.show()
     return
 
+
+# 绘制各个柜台的人数
 def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
     X = np.arange(5,24,0.5)
     print(X)
