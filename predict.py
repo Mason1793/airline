@@ -12,7 +12,8 @@ denominator = 24*60*60
 ##"00:00:00","00:30:00","01:00:00","01:30:00","02:00:00","02:30:00","03:00:00","03:30:00","04:00:00","04:30:00"
                 
 
-every_moment = ["05:00:00","05:30:00","06:00:00","06:30:00","07:00:00","07:30:00","08:00:00","08:30:00",
+every_moment = ["00:00:00","00:30:00","01:00:00","01:30:00","02:00:00","02:30:00","03:00:00","03:30:00","04:00:00",
+                "04:30:00","05:00:00","05:30:00","06:00:00","06:30:00","07:00:00","07:30:00","08:00:00","08:30:00",
                 "09:00:00","09:30:00","10:00:00","10:30:00","11:00:00","11:30:00","12:00:00","12:30:00","13:00:00",
                 "13:30:00","14:00:00","14:30:00","15:00:00","15:30:00","16:00:00","16:30:00","17:00:00","17:30:00",
                 "18:00:00","18:30:00","19:00:00","19:30:00","20:00:00","20:30:00","21:00:00","21:30:00","22:00:00",
@@ -159,10 +160,10 @@ def count_model(data):
     sum_inter_GY_travellers = count_interval_travellers(moments_to_zero,inter_time_flys_to_zero,inter_GF_travellers)
 
 
-    print("国内高端柜台人数:",sum_domestic_PFJC_travellers,'\n')
-    print("国内经济柜台人数：",sum_domestic_GY_travellers,'\n')
-    print("国际高端柜台人数:",sum_inter_PFJC_travellers,'\n')
-    print("国际经济柜台人数：",sum_inter_GY_travellers,'\n')
+    # print("国内高端柜台人数:",sum_domestic_PFJC_travellers,'\n')
+    # print("国内经济柜台人数：",sum_domestic_GY_travellers,'\n')
+    # print("国际高端柜台人数:",sum_inter_PFJC_travellers,'\n')
+    # print("国际经济柜台人数：",sum_inter_GY_travellers,'\n')
     # moments_to_zero,time_flys_to_zero = count_interval_time(time_flys)                  ##将时间转换为0-1空间上
     # count_interval_travellers(moments_to_zero,time_flys_to_zero,travellers_num)         ##计算间隔人数
     
@@ -204,20 +205,20 @@ def plt_ratio(take_off_time):
 
 # 绘制各个柜台的人数
 def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
-    X = np.arange(5,24,0.5)
+    X = np.arange(0,24,0.5)
     print(X)
-    domestic_PFJC_Y = sum_domestic_PFJC_travellers.values();
+    domestic_PFJC_Y = sum_domestic_PFJC_travellers.values()
 
-    domestic_GY_Y = sum_domestic_GY_travellers.values();
-    inter_PFJC_Y = sum_inter_PFJC_travellers.values();
-    sum_inter_GY_travellers.values();
+    domestic_GY_Y = sum_domestic_GY_travellers.values()
+    inter_PFJC_Y = sum_inter_PFJC_travellers.values()
+    sum_inter_GY_travellers.values()
     # print(len(domestic_PFJC_Y))
    
 
-    domestic_PFJC, = plt.plot(X,sum_domestic_PFJC_travellers.values(),c='red');
+    domestic_PFJC, = plt.plot(X,sum_domestic_PFJC_travellers.values(),c='red')
     domestic_GY, = plt.plot(X,sum_domestic_GY_travellers.values(),c='blue')
     inter_PFJC, = plt.plot(X,sum_inter_PFJC_travellers.values(),c='orange')
-    inter_GY, = plt.plot(X, sum_inter_GY_travellers.values(),c='green');
+    inter_GY, = plt.plot(X, sum_inter_GY_travellers.values(),c='green')
 
     plt.xlabel("time")
     plt.ylabel("CAPSS")
@@ -225,15 +226,67 @@ def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,s
     plt.show()
     return
 
+def compute_Lq(S,rho_star,P0):
+    Lq=(math.pow((S*rho_star),S)*(rho_star))/(math.factorial(S)*(1-rho_star)*(1-rho_star))
+    Lq=Lq*P0;
+    return Lq;
+
+# 计算柜台数随着时间的安排变化
+# cost_traveller 旅客等待的成本
+# cost_counter 柜台的开放成本
+# count_traveller 某类旅客的人数
+# time_service 某台柜台的服务时间
+# return c ,柜台数随时间的分布（30min）
+# 算法描述：L(c)-L(c+1) <= cost_counter/cost_traveller <= L(c-1)-L(c)
+# 排队论计算Lq
+# 用不等式逼近c
+# 详情请见说明文档（.md）
+def compute_counter(cost_traveller,cost_counter,count_traveller,time_service):
+    MAX_COUNT = 100
+    threshold = cost_counter/cost_traveller
+    _lambda = count_traveller*2 #人/小时
+    mu = 1/time_service * 3600 #人/小时
+    rho = _lambda/(mu) #服务强度，要小于1
+    for c in range(2,MAX_COUNT,1):
+        if(rho/c<1):
+            part1=0
+            for k in range(0,c-1):
+                part1+=(1/math.factorial(k))*math.pow(rho,k)
+            
+            part2=(1/math.factorial(c))*(1/(1-rho/c))*(math.pow(rho,c))
+            
+            P0 = 1/(part1+part2);
+            
+            Lq=compute_Lq(c,rho/c,P0);
+            Lq_before=compute_Lq(c-1,rho/(c-1),P0)
+            Lq_after=compute_Lq(c+1,rho/(c+1),P0)
+
+    
+            if(Lq-Lq_after<=threshold and Lq_before-Lq>=threshold):
+                return c;
+    
+    return 1; 
+
+def statistics_counter(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
+    sum_domestic_PFJC_travellers
+    sum_domestic_GY_travellers
+    sum_inter_PFJC_travellers
+    sum_inter_GY_travellers
+    return 
+
 if __name__ == '__main__':
-    data = get_data_on_date("补全航班数据.xls","2019-1-16")
+    data = get_data_on_date("补全航班数据.xls","2019-1-14")
     # plt_ratio(5/24)
-    # print(data)
+    print(data)
     # count_dome_inter_values(data)
     sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers = count_model(data)
+    val = list(sum_domestic_GY_travellers.values())
+    c = compute_counter(14.37,15,val[2],60)
+    print("机场人数：",val[2],"值机柜台数：",c)
+    # 
     # count_model(data) 
-    plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
-    #count_model(data)
+    # plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
+    # count_model(data)
     # p = ratio_accumulate_traveller(0.24333,0.00001)
     # print(p)
     # print("时间格式YYYY-MM-DD hh-mm-ss,如2019-09-01 19:11:11")
