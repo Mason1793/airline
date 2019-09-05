@@ -123,7 +123,7 @@ def count_dome_inter_values(data):
                 else:
                     domestic_PFJC_num = domestic_PFJC_num + air_data['traveller'][key] 
             domestic_GY_travellers.append(domestic_GY_num * 0.95 * 0.91 * (0.26 + 0.74*0.25))
-            domestic_PFJC_travellers.append(domestic_PFJC_num * 0.95 * 0.91 * (0.26 + 0.74*0.25))
+            domestic_PFJC_travellers.append(domestic_PFJC_num * 0.95 * 0.91 * (0.26 + 0.74*0.25) + domestic_GY_num * 0.0525)          ##PFJC+金卡+白金卡
         else:
             inter_GY_num = 0
             inter_PFJC_num = 0
@@ -136,7 +136,7 @@ def count_dome_inter_values(data):
                 else:
                     inter_PFJC_num = inter_PFJC_num + air_data['traveller'][key]
             inter_GF_travellers.append(inter_GY_num * 0.95 * 0.55)
-            inter_PFJC_travellers.append(inter_PFJC_num * 0.95 * 0.55)
+            inter_PFJC_travellers.append(inter_PFJC_num * 0.95 * 0.55 + inter_GY_num * 0.0525)   ##PFJC + 金卡 + 白金卡
     # print("国内高端柜台：",domestic_PFJC_travellers,"航班数：",len(domestic_PFJC_travellers))
     # print("国内经济柜台：",domestic_GY_travellers,"航班数：",len(domestic_GY_travellers))
     # print("国际高端柜台：",inter_PFJC_travellers,"航班数：",len(inter_PFJC_travellers))
@@ -222,7 +222,7 @@ def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,s
 
     plt.xlabel("time")
     plt.ylabel("CAPSS")
-    plt.legend(handles=[domestic_PFJC, domestic_GY,inter_PFJC,inter_GY], labels=['domestic_PFJC', 'domestic_GY','inter_PFJC','inter_GY'],loc='upper right')
+    plt.legend(handles=[domestic_PFJC, domestic_GY,inter_PFJC,inter_GY], labels=['domestic_PFJC+vip', 'domestic_GY','inter_PFJC+vip','inter_GY'],loc='upper right')
     plt.show()
     return
 
