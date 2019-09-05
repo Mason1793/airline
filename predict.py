@@ -268,21 +268,42 @@ def compute_counter(cost_traveller,cost_counter,count_traveller,time_service):
     return 1; 
 
 def statistics_counter(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
-    sum_domestic_PFJC_travellers
-    sum_domestic_GY_travellers
-    sum_inter_PFJC_travellers
-    sum_inter_GY_travellers
+    print("统计柜台数")
+    demestic_counter={}
+    international_counter={}
+    high_end_counter={}
+
+    cost_traveller=14.37
+    cost_counter=15
+
+    for key in sum_domestic_GY_travellers.keys():
+        high_end_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_domestic_PFJC_travellers[key],120)
+        high_end_counter[key]=high_end_counter[key]+compute_counter(cost_traveller,cost_counter,sum_inter_PFJC_travellers[key],120)
+       
+        demestic_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_domestic_GY_travellers[key],60)
+        international_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_inter_GY_travellers[key],90)
+    
+    X = np.arange(0,24,0.5)
+    l1,=plt.plot(X,high_end_counter.values(),c='red')
+    l2,=plt.plot(X,demestic_counter.values(),c='blue')
+    l3,=plt.plot(X,international_counter.values(),c='green')
+    plt.xlabel("time")
+    plt.ylabel("counter")
+
+    plt.legend(handles=[l1,l2,l3], labels=['high-end', 'demestic','international'],loc='upper right')
+    plt.show()
     return 
 
 if __name__ == '__main__':
     data = get_data_on_date("补全航班数据.xls","2019-1-14")
     # plt_ratio(5/24)
-    print(data)
     # count_dome_inter_values(data)
     sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers = count_model(data)
-    val = list(sum_domestic_GY_travellers.values())
-    c = compute_counter(14.37,15,val[2],60)
-    print("机场人数：",val[2],"值机柜台数：",c)
+    
+    statistics_counter(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
+    # val = list(sum_domestic_GY_travellers.values())
+    # c = compute_counter(14.37,15,val[2],60)
+    # print("机场人数：",val[2],"值机柜台数：",c)
     # 
     # count_model(data) 
     # plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
