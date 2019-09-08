@@ -207,22 +207,26 @@ def plt_ratio(take_off_time):
 def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
     X = np.arange(0,24,0.5)
     print(X)
-    domestic_PFJC_Y = sum_domestic_PFJC_travellers.values()
+    for key in sum_domestic_PFJC_travellers.keys():
+        sum_domestic_PFJC_travellers[key]+=sum_inter_PFJC_travellers[key]
+
+    vip = sum_domestic_PFJC_travellers.values()
 
     domestic_GY_Y = sum_domestic_GY_travellers.values()
-    inter_PFJC_Y = sum_inter_PFJC_travellers.values()
+   
     sum_inter_GY_travellers.values()
     # print(len(domestic_PFJC_Y))
    
 
-    domestic_PFJC, = plt.plot(X,sum_domestic_PFJC_travellers.values(),c='red')
+   
     domestic_GY, = plt.plot(X,sum_domestic_GY_travellers.values(),c='blue')
-    inter_PFJC, = plt.plot(X,sum_inter_PFJC_travellers.values(),c='orange')
     inter_GY, = plt.plot(X, sum_inter_GY_travellers.values(),c='green')
 
+    vip, = plt.plot(X,vip,c='orange')
+    plt.title("2019-1-20")
     plt.xlabel("time")
     plt.ylabel("CAPSS")
-    plt.legend(handles=[domestic_PFJC, domestic_GY,inter_PFJC,inter_GY], labels=['domestic_PFJC+vip', 'domestic_GY','inter_PFJC+vip','inter_GY'],loc='upper right')
+    plt.legend(handles=[domestic_GY,vip,inter_GY], labels=[ 'domestic_GY','vip','inter_GY'],loc='upper right')
     plt.show()
     return
 
@@ -267,7 +271,7 @@ def compute_counter(cost_traveller,cost_counter,count_traveller,time_service):
     
     return 1; 
 
-def statistics_counter(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
+def statistics_counter(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
     print("统计柜台数")
     demestic_counter={}
     international_counter={}
@@ -284,23 +288,26 @@ def statistics_counter(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,s
         international_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_inter_GY_travellers[key],90)
     
     X = np.arange(0,24,0.5)
-    l1,=plt.plot(X,high_end_counter.values(),c='red')
+
+    l1,=plt.plot(X,high_end_counter.values(),c='orange')
     l2,=plt.plot(X,demestic_counter.values(),c='blue')
     l3,=plt.plot(X,international_counter.values(),c='green')
     plt.xlabel("time")
     plt.ylabel("counter")
+    plt.title(title_date)
 
     plt.legend(handles=[l1,l2,l3], labels=['high-end', 'demestic','international'],loc='upper right')
     plt.show()
     return 
 
 if __name__ == '__main__':
-    data = get_data_on_date("补全航班数据.xls","2019-1-14")
+    title_date="2019-1-14"
+    data = get_data_on_date("补全航班数据.xls",title_date)
     # plt_ratio(5/24)
     # count_dome_inter_values(data)
     sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers = count_model(data)
     
-    statistics_counter(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
+    statistics_counter(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
     # val = list(sum_domestic_GY_travellers.values())
     # c = compute_counter(14.37,15,val[2],60)
     # print("机场人数：",val[2],"值机柜台数：",c)
