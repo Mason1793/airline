@@ -19,15 +19,17 @@ every_moment = ["00:00:00","00:30:00","01:00:00","01:30:00","02:00:00","02:30:00
                 "18:00:00","18:30:00","19:00:00","19:30:00","20:00:00","20:30:00","21:00:00","21:30:00","22:00:00",
                 "22:30:00","23:00:00","23:30:00","00:00:00"]
 
+time_name_list = [0,'',1,'',2,'',3,'',4,'',5,'',6,'',7,'',8,'',9,'',10,'',11,'',12,'',13,'',14,'',15
+    ,'',16,'',17,'',18,'',19,'',20,'',21,'',22,'',23,'']
 
-# 这里修改航班时间
 def ratio_accumulate_traveller(take_off_time,interval_time) :
-    t0= take_off_time
+    t0=take_off_time-1/6
+    if t0<0:
+        t0=t0+5/6
+    t0=1/2-1/6
     mu=43.68*math.pow(t0,4)-95.04*math.pow(t0,3)+71.64*math.pow(t0,2)-21.29*t0-0.7403
     sigma=2.44*math.pow(t0,3)-4.738*math.pow(t0,2)+3.179*t0-0.383
     sigma = abs(sigma)
-    # print("mu:",mu)
-    # print("sigma:",sigma)
     temp_x=(math.log(interval_time + 0.00001)-mu)/(sigma*pow(2,0.5))
     p=0.5 - 0.5*math.erf(temp_x)
     return p
@@ -203,32 +205,39 @@ def plt_ratio(take_off_time):
     return
 
 
-# 绘制各个柜台的人数
-def plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
-    X = np.arange(0,24,0.5)
-    print(X)
+# 绘制各个柜台的等待人数
+def plt_CAPSS_tendency(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers):
     for key in sum_domestic_PFJC_travellers.keys():
         sum_domestic_PFJC_travellers[key]+=sum_inter_PFJC_travellers[key]
 
     vip = sum_domestic_PFJC_travellers.values()
 
-    domestic_GY_Y = sum_domestic_GY_travellers.values()
+    domestic_GY = sum_domestic_GY_travellers.values()
    
-    sum_inter_GY_travellers.values()
-    # print(len(domestic_PFJC_Y))
-   
+    inter_GY=sum_inter_GY_travellers.values()
 
-   
-    domestic_GY, = plt.plot(X,sum_domestic_GY_travellers.values(),c='blue')
-    inter_GY, = plt.plot(X, sum_inter_GY_travellers.values(),c='green')
+    
 
-    vip, = plt.plot(X,vip,c='orange')
-    plt.title("2019-1-20")
-    plt.xlabel("time")
-    plt.ylabel("CAPSS")
-    plt.legend(handles=[domestic_GY,vip,inter_GY], labels=[ 'domestic_GY','vip','inter_GY'],loc='upper right')
-    plt.show()
+    x =list(range(len(vip)))  
+    total_width, n = 0.6, 3  
+    width = total_width / n  
+    plt.bar(x, vip, width=width,tick_label=time_name_list,label='vip',fc = 'y')  
+
+    for i in range(len(x)):  
+        x[i] = x[i] + width  
+    plt.bar(x, domestic_GY,width=width, tick_label=time_name_list,label='domestic_GY',fc = 'r')  
+
+    for i in range(len(x)):  
+        x[i] = x[i] + width  
+    plt.bar(x, inter_GY,width=width, tick_label=time_name_list,label='inter_GY',fc = 'b')
+
+
+    plt.legend()  
+    plt.title(title_date)
+    plt.show()    
     return
+
+
 
 def compute_Lq(S,rho_star,P0):
     Lq=(math.pow((S*rho_star),S)*(rho_star))/(math.factorial(S)*(1-rho_star)*(1-rho_star))
@@ -287,57 +296,40 @@ def statistics_counter(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_t
         demestic_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_domestic_GY_travellers[key],60)
         international_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_inter_GY_travellers[key],90)
     
-    X = np.arange(0,24,0.5)
 
-    l1,=plt.plot(X,high_end_counter.values(),c='orange')
-    l2,=plt.plot(X,demestic_counter.values(),c='blue')
-    l3,=plt.plot(X,international_counter.values(),c='green')
-    plt.xlabel("time")
-    plt.ylabel("counter")
+
+    total_width, n = 0.6, 3  
+    width = total_width / n  
+    x =list(range(len(high_end_counter.values())))  
+
+    plt.bar(x, high_end_counter.values(), width=width,tick_label=time_name_list,label='vip',fc = 'y')  
+
+    for i in range(len(x)):  
+        x[i] = x[i] + width  
+    plt.bar(x, demestic_counter.values(),width=width, tick_label=time_name_list,label='domestic_GY',fc = 'r')  
+
+    for i in range(len(x)):  
+        x[i] = x[i] + width  
+    plt.bar(x, international_counter.values(),width=width, tick_label=time_name_list,label='inter_GY',fc = 'b')
+
+
+    plt.legend()  
     plt.title(title_date)
-
-    plt.legend(handles=[l1,l2,l3], labels=['high-end', 'demestic','international'],loc='upper right')
+    plt.show()  
     plt.show()
     return 
 
 if __name__ == '__main__':
-    title_date="2019-1-14"
+    title_date="2019-1-15"
     data = get_data_on_date("补全航班数据.xls",title_date)
-    # plt_ratio(5/24)
-    # count_dome_inter_values(data)
+
+    # plt_ratio(4/24)
+
     sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers = count_model(data)
+    plt_CAPSS_tendency(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
     
     statistics_counter(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
-    # val = list(sum_domestic_GY_travellers.values())
-    # c = compute_counter(14.37,15,val[2],60)
-    # print("机场人数：",val[2],"值机柜台数：",c)
-    # 
-    # count_model(data) 
-    # plt_CAPSS_tendency(sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
-    # count_model(data)
-    # p = ratio_accumulate_traveller(0.24333,0.00001)
-    # print(p)
-    # print("时间格式YYYY-MM-DD hh-mm-ss,如2019-09-01 19:11:11")
-    # print("输入起始时间：")
-    # time_from=input()
-    # print("输入结束时间：")
-    # time_to=input()
-    # x,y,z,s = count_traveller(time_from,time_to,data)
-    # print("国内经济，国内商务，国际经济，国际商务")
-    # print(x,",",y,",",z,",",s)
-    # print("国内柜台，国际柜台")
-    # m=(x+y)*(0.95*0.91)*(0.26+0.74*0.25)
-    # n=(z+s)*(0.95*0.55)
-    # print(m,n)
-
-
-
-# X表示等待时间 ，等待时间为0无意义（ln0），需要设置一个极限值
-
-
-
-#2019-04-03 08:00:00
-
+   
 
 
 
