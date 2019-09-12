@@ -296,7 +296,7 @@ def statistics_counter(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_t
         demestic_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_domestic_GY_travellers[key],60)
         international_counter[key]=0+compute_counter(cost_traveller,cost_counter,sum_inter_GY_travellers[key],90)
     
-
+    print(high_end_counter)
 
     total_width, n = 0.6, 3  
     width = total_width / n  
@@ -304,19 +304,18 @@ def statistics_counter(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_t
 
     plt.bar(x, high_end_counter.values(), width=width,tick_label=time_name_list,label='vip',fc = 'y')  
 
-    for i in range(len(x)):  
-        x[i] = x[i] + width  
-    plt.bar(x, demestic_counter.values(),width=width, tick_label=time_name_list,label='domestic_GY',fc = 'r')  
+    # for i in range(len(x)):  
+    #     x[i] = x[i] + width  
+    # plt.bar(x, demestic_counter.values(),width=width, tick_label=time_name_list,label='domestic_GY',fc = 'r')  
 
-    for i in range(len(x)):  
-        x[i] = x[i] + width  
-    plt.bar(x, international_counter.values(),width=width, tick_label=time_name_list,label='inter_GY',fc = 'b')
+    # for i in range(len(x)):  
+    #     x[i] = x[i] + width  
+    # plt.bar(x, international_counter.values(),width=width, tick_label=time_name_list,label='inter_GY',fc = 'b')
 
 
     plt.legend()  
     plt.title(title_date)
     plt.show()  
-    plt.show()
     return 
 
 if __name__ == '__main__':
@@ -326,7 +325,7 @@ if __name__ == '__main__':
     # plt_ratio(4/24)
 
     sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers = count_model(data)
-    plt_CAPSS_tendency(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
+    # plt_CAPSS_tendency(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
     
     statistics_counter(title_date,sum_domestic_PFJC_travellers,sum_domestic_GY_travellers,sum_inter_PFJC_travellers,sum_inter_GY_travellers)
    
